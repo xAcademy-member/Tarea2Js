@@ -1,0 +1,16 @@
+{
+  "name": "tarea2_cluster1",
+  "version": "1.0.0",
+  "description": "Primer proyecto del Cluster 1 con Node.",
+  "main": "tarea2.js",
+  "scripts": {
+    "start": "node tarea2.js",
+    "start:dev": "nodemon tarea2.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Cinthia M. Orona",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
