@@ -116,13 +116,13 @@ class Carrito {
             const productoEnCarrito = this.productos.find((p) => p.sku === sku);
             if (productoEnCarrito) {                
                 productoEnCarrito.cantidad += cantidad;
+                productoEnCarrito.precioTotal += producto.precio * cantidad; // Actualiza la suma del precio
                 data.stock -= cantidad;
             } else {
-                const nuevoProducto = new ProductoEnCarrito(sku, data.nombre, cantidad);
+                const nuevoProducto = new ProductoEnCarrito(sku, data.nombre, data.precio, cantidad, data.precioTotal);
                 this.productos.push(nuevoProducto);
                 data.stock -= cantidad;
             }
-            this.precioTotal += data.precio * cantidad;
 
             // Actualizar la lista de categorías si la categoría no está presente
             if (!this.categorias.includes(data.categoria)) {
@@ -150,6 +150,7 @@ class Carrito {
 
             if (cantidad < productoEnCarrito.cantidad) {
                 productoEnCarrito.cantidad -= cantidad;
+                productoEnCarrito.precioTotal -= productoEnCarrito.precio * cantidad; // Actualiza el precioTotal
                 stockDB.stock += cantidad;
             } else {
                 const index = this.productos.indexOf(productoEnCarrito);
@@ -165,12 +166,16 @@ class Carrito {
 class ProductoEnCarrito {
     sku; // Identificador único del producto
     nombre; // Su nombre
+    precio;
     cantidad; // Cantidad de este producto en el carrito
+    precioTotal; // Suma del precio del producto (cantidad * precio
 
-    constructor(sku, nombre, cantidad) {
+    constructor(sku, nombre, precio, cantidad) {
         this.sku = sku;
         this.nombre = nombre;
+        this.precio = precio;
         this.cantidad = cantidad;
+        this.precioTotal = precio * cantidad; // Calcula la suma del precio
     }
 }
 
@@ -207,7 +212,7 @@ function agregarProductosALaBaseDeDatos(nuevosProductos) {
 //Prueba de funcionamiento
 const carrito = new Carrito();
 
-console.log("********************Base de Datos**********")
+console.log("**************************Base de Datos****************************")
 mostrarProductosEnBaseDeDatos();
 
 carrito.agregarProducto('OL883YE', 2) 
@@ -218,11 +223,9 @@ carrito.agregarProducto('OL883YE', 5)
 carrito.agregarProducto('XX92LKI', 2) 
 carrito.agregarProducto('WE328NJ', 2) 
     .then(() => {
-        // console.log(carrito.productos);
-        // console.log(productosDelSuper); //se resta el stock
-        console.log("***********Productos AGREGADOS en Carrito************")
+        console.log("**********************Productos AGREGADOS en Carrito*****************")
         mostrarProductosEnCarrito(carrito);
-        console.log("*******************************************")
+        console.log("*********************************************************************")
         // mostrarProductosEnBaseDeDatos();
     })
     .then(() => {
@@ -230,18 +233,16 @@ carrito.agregarProducto('WE328NJ', 2)
         carrito.eliminarProducto('UI999TY', 2) 
         carrito.eliminarProducto('OL883YE', 2) 
             .then(() => {
-                // console.log(carrito.productos);
-                // console.log(productosDelSuper); //se suma al stock devuelta
                 // mostrarProductosEnCarrito(carrito);
                 // mostrarProductosEnBaseDeDatos();
+                console.log("********************Productos POST ELIMINACION en Carrito************")
+                mostrarProductosEnCarrito(carrito);
+                console.log("***********************Base de Datos POST CARRITO *******************")
+                mostrarProductosEnBaseDeDatos();
             })
             .catch((error) => {
                 console.log(error);
-            });
-        console.log("***********Productos POST ELIMINACION en Carrito**********")
-        mostrarProductosEnCarrito(carrito);
-        console.log("**************Base de Datos POST CARRITO **************")
-        mostrarProductosEnBaseDeDatos();
+            });        
     }).catch((error) => {
         console.log(error);
     });
